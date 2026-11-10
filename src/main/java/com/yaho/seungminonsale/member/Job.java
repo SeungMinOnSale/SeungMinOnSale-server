@@ -31,9 +31,6 @@ public class Job {
     @Column(columnDefinition = "Text")
     private String description;
 
-    @Column(nullable = false)
-    private String location;
-
     @Column(nullable = false, length = 255)
     private LocalDate workDate;
 
