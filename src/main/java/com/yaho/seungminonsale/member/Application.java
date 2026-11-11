@@ -16,7 +16,7 @@ public class Application {
     @Column(nullable = false)
     private Worker worker;
 
-    C
+    @Column(nullable = false)
     private ApplicationStatus status;
 
     private LocalDateTime appliedAt;
