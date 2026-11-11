@@ -1,4 +1,9 @@
 package com.yaho.seungminonsale.member;
 
-public class ApplicationStatus {
+public enum ApplicationStatus {
+    PENDING,
+    ACCEPTED,
+    REJECTED
+
+
 }
