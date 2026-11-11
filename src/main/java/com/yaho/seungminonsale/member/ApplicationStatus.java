@@ -2,11 +2,10 @@ package com.yaho.seungminonsale.member;
 
 import jakarta.persistence.ManyToOne;
 
-public class ApplicationStatus {
+public enum ApplicationStatus {
+    PENDING,
+    ACCEPTED,
+    REJECTED
 
-    private Long id;
-    private Job job;
 
-    @ManyToOne
-    private Worker worker;
 }
