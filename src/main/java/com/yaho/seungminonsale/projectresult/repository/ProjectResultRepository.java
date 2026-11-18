@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProjectResultRepository extends JpaRepository<ProjectResult, Long> {
+
+    boolean existsByProject_Id(Long projectId);
 }
