@@ -1,13 +1,12 @@
 package com.yaho.seungminonsale.worker.service;
 
+import com.yaho.seungminonsale.common.response.PageResponse;
 import com.yaho.seungminonsale.worker.dto.WorkerResponse;
 import com.yaho.seungminonsale.worker.dto.WorkerUpdateRequest;
 
-import java.util.List;
-
 public interface WorkerService {
 
-    List<WorkerResponse> getWorkers();
+    PageResponse<WorkerResponse> getWorkers(String skills, Boolean available, int page, int size);
 
     WorkerResponse getWorker(Long workerId);
 

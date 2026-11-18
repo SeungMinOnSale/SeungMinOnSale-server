@@ -35,7 +35,7 @@ public class Worker {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String phone;
 
     @Column(length = 255)
@@ -61,18 +61,10 @@ public class Worker {
         this.createdAt = LocalDateTime.now();
     }
 
-    public void update(String name, String phone, String skills, Boolean available) {
-        if (name != null) {
-            this.name = name;
-        }
-        if (phone != null) {
-            this.phone = phone;
-        }
-        if (skills != null) {
-            this.skills = skills;
-        }
-        if (available != null) {
-            this.available = available;
-        }
+    public void update(String name, String phone, String skills, boolean available) {
+        this.name = name;
+        this.phone = phone;
+        this.skills = skills;
+        this.available = available;
     }
 }
