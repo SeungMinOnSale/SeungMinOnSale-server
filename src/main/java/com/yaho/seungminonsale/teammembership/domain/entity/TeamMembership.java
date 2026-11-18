@@ -1,6 +1,6 @@
 package com.yaho.seungminonsale.teammembership.domain.entity;
 
-import com.yaho.seungminonsale.application.entity.Applications;
+import com.yaho.seungminonsale.application.entity.Application;
 import com.yaho.seungminonsale.common.BaseTimeEntity;
 import com.yaho.seungminonsale.project.entity.Project;
 import com.yaho.seungminonsale.teammembership.domain.enums.MembershipStatus;
@@ -34,7 +34,7 @@ public class TeamMembership extends BaseTimeEntity {
 
     @OneToOne
     @JoinColumn(name = "fk_application_id", nullable = false, unique = true)
-    private Applications application;
+    private Application application;
 
     @ManyToOne
     @JoinColumn(name = "fk_project_id", nullable = false)
