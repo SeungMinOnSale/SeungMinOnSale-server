@@ -1,9 +1,9 @@
-package com.yaho.seungminonsale.teammembership.entity;
+package com.yaho.seungminonsale.teammembership.domain.entity;
 
 import com.yaho.seungminonsale.application.entity.Applications;
 import com.yaho.seungminonsale.common.BaseTimeEntity;
 import com.yaho.seungminonsale.project.entity.Project;
-import com.yaho.seungminonsale.teammembership.enums.MembershipStatus;
+import com.yaho.seungminonsale.teammembership.domain.enums.MembershipStatus;
 import com.yaho.seungminonsale.worker.entity.Worker;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
