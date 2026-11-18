@@ -26,7 +26,9 @@ public enum ErrorCode {
 
     MEMBERSHIP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 팀원 정보를 찾을 수 없습니다."),
     NOT_MEMBERSHIP_OWNER(HttpStatus.FORBIDDEN, "본인의 팀원 정보에만 활동을 기록할 수 있습니다."),
-    PROJECT_NOT_ONGOING(HttpStatus.CONFLICT, "진행 중인 프로젝트가 아닙니다.");
+    PROJECT_NOT_ONGOING(HttpStatus.CONFLICT, "진행 중인 프로젝트가 아닙니다."),
+
+    PROJECT_RESULT_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 결과가 등록된 프로젝트입니다.");
 
     ErrorCode(HttpStatus status, String message) {
         this.message = message;

@@ -1,6 +1,7 @@
 package com.yaho.seungminonsale.teammembership.repository;
 
 import com.yaho.seungminonsale.teammembership.domain.entity.TeamMembership;
+import com.yaho.seungminonsale.teammembership.domain.enums.MembershipStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -41,4 +42,6 @@ public interface TeamMembershipRepository extends JpaRepository<TeamMembership, 
         order by t.id
     """)
     List<TeamMembership> findAllByWorker_Id(@Param("workerId") Long workerId);
+
+    List<TeamMembership> findAllByProject_IdAndStatus(Long projectId, MembershipStatus status);
 }
