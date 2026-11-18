@@ -35,4 +35,8 @@ public class Project extends BaseTimeEntity {
     public boolean isOngoing() {
         return this.status == ProjectStatus.ONGOING;
     }
+
+    public void complete() {
+        this.status = ProjectStatus.COMPLETED;
+    }
 }
