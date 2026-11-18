@@ -1,38 +1,26 @@
 package com.yaho.seungminonsale.worker.service;
 
-import com.yaho.seungminonsale.common.exception.BusinessException;
-import com.yaho.seungminonsale.common.exception.ErrorCode;
-import com.yaho.seungminonsale.common.response.PageResponse;
-import com.yaho.seungminonsale.worker.dto.WorkerResponse;
-import com.yaho.seungminonsale.worker.dto.WorkerUpdateRequest;
+import com.yaho.seungminonsale.exception.WorkerNotFoundException;
+import com.yaho.seungminonsale.worker.dto.request.WorkerUpdateRequest;
+import com.yaho.seungminonsale.worker.dto.response.WorkerResponse;
 import com.yaho.seungminonsale.worker.entity.Worker;
 import com.yaho.seungminonsale.worker.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class WorkerServiceImpl implements WorkerService {
-
-    private static final int MAX_PAGE_SIZE = 100;
 
     private final WorkerRepository workerRepository;
 
     @Override
-    public PageResponse<WorkerResponse> getWorkers(String skills, Boolean available, int page, int size) {
-        if (page < 0 || size < 1 || size > MAX_PAGE_SIZE) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT, "page는 0 이상, size는 1~100 사이로 입력해야 합니다.");
-        }
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        boolean hasSkills = StringUtils.hasText(skills);
+    public Page<WorkerResponse> findAll(String skills, Boolean available, Pageable pageable) {
+        boolean hasSkills = skills != null && !skills.isBlank();
 
         Page<Worker> workers;
         if (hasSkills && available != null) {
@@ -44,29 +32,26 @@ public class WorkerServiceImpl implements WorkerService {
         } else {
             workers = workerRepository.findAll(pageable);
         }
-
-        return PageResponse.from(workers.map(WorkerResponse::from));
+        return workers.map(WorkerResponse::from);
     }
 
     @Override
-    public WorkerResponse getWorker(Long workerId) {
-        return WorkerResponse.from(findWorker(workerId));
+    public WorkerResponse findById(Long id) {
+        return WorkerResponse.from(getWorker(id));
     }
 
     @Override
     @Transactional
-    public WorkerResponse updateWorker(Long workerId, WorkerUpdateRequest request) {
-        if (!StringUtils.hasText(request.name()) || request.available() == null) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT, "이름과 참여 가능 여부는 필수입니다.");
-        }
-
-        Worker worker = findWorker(workerId);
-        worker.update(request.name(), request.phone(), request.skills(), request.available());
+    public WorkerResponse update(Long id, WorkerUpdateRequest request) {
+        Worker worker = getWorker(id);
+        worker.update(request.getName(), request.getPhone(), request.getSkills(), request.getAvailable());
+        // updatedAt은 flush 시점에 바뀌므로 응답 전에 flush
+        workerRepository.flush();
         return WorkerResponse.from(worker);
     }
 
-    private Worker findWorker(Long workerId) {
-        return workerRepository.findById(workerId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.WORKER_NOT_FOUND));
+    private Worker getWorker(Long id) {
+        return workerRepository.findById(id)
+                .orElseThrow(WorkerNotFoundException::new);
     }
 }
