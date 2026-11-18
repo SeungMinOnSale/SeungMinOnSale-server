@@ -1,4 +1,4 @@
-package com.yaho.seungminonsale.projectresult.entity;
+package com.yaho.seungminonsale.projectresult.domain.entity;
 
 import com.yaho.seungminonsale.common.BaseTimeEntity;
 import com.yaho.seungminonsale.project.entity.Project;
