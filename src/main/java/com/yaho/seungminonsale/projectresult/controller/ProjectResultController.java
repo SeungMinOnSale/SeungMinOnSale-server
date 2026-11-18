@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/project-results")
@@ -23,5 +25,12 @@ public class ProjectResultController {
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(projectResultService.createProjectResult(userId, request));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProjectResultResponse>> getProjectResults(
+            @RequestParam(required = false) Long projectId
+    ) {
+        return ResponseEntity.ok(projectResultService.getProjectResults(projectId));
     }
 }

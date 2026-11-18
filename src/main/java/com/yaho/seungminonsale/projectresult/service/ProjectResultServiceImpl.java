@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProjectResultServiceImpl implements ProjectResultService {
@@ -48,5 +50,18 @@ public class ProjectResultServiceImpl implements ProjectResultService {
                 .forEach(TeamMembership::complete);
 
         return ProjectResultResponse.from(projectResult);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProjectResultResponse> getProjectResults(Long projectId) {
+        if (projectId != null)
+            return projectResultRepository.findByProject_Id(projectId).stream()
+                    .map(ProjectResultResponse::from)
+                    .toList();
+
+        return projectResultRepository.findAllWithProject().stream()
+                .map(ProjectResultResponse::from)
+                .toList();
     }
 }
