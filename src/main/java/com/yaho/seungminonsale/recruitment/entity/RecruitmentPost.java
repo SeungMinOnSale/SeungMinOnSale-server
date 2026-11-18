@@ -36,4 +36,8 @@ public class RecruitmentPost extends BaseTimeEntity {
 
     @Column(nullable = false)
     private RecruitmentStatus status;
+
+    public boolean isOpen() {
+        return this.status == RecruitmentStatus.OPEN;
+    }
 }

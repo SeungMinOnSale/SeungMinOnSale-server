@@ -8,13 +8,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface RecruitmentPostRepository extends JpaRepository<RecruitmentPost, Long> {
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query(value = """
-        select count(r)
+    @Query("""
+        select r
         from RecruitmentPost r
-        where r.id = :id and r.status = 'ACCEPTED'
+        where r.id = :id
     """)
-    Integer countByIdForUpdate(@Param("id") Long id);
+    Optional<RecruitmentPost> findWithLockById(@Param("id") Long id);
 }
