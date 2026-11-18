@@ -1,7 +1,7 @@
-package com.yaho.seungminonsale.activitylog.entity;
+package com.yaho.seungminonsale.activitylog.domain.entity;
 
 import com.yaho.seungminonsale.common.BaseTimeEntity;
-import com.yaho.seungminonsale.teammembership.entity.TeamMembership;
+import com.yaho.seungminonsale.teammembership.domain.entity.TeamMembership;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
