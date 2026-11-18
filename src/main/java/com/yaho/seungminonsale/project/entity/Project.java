@@ -4,12 +4,17 @@ package com.yaho.seungminonsale.project.entity;
 import com.yaho.seungminonsale.common.BaseTimeEntity;
 import com.yaho.seungminonsale.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 @Table(name = "projects")
+@Getter
 public class Project extends BaseTimeEntity {
 
     @Id
