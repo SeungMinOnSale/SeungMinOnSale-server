@@ -1,6 +1,9 @@
 package com.yaho.seungminonsale.application.controller;
 
 import com.yaho.seungminonsale.application.dto.ApplicationDecisionRequest;
+import com.yaho.seungminonsale.application.service.ApplicationService;
+import com.yaho.seungminonsale.teammembership.dto.TeamMembershipResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,12 +12,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/applications")
 public class ApplicationController {
+
+    private final ApplicationService applicationService;
+
     @PutMapping("/{id}/decision")
-    public ResponseEntity<Void> decideApplication(
+    public ResponseEntity<TeamMembershipResponse> decideApplication(
             @PathVariable Long id,
             @RequestParam Long userId,
-            @RequestBody ApplicationDecisionRequest request
+            @RequestBody @Valid ApplicationDecisionRequest request
     ) {
-        return null;
+        return ResponseEntity.ok(applicationService.decideApplication(userId, id, request));
     }
 }

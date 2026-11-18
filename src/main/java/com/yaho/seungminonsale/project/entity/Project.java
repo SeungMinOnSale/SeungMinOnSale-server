@@ -30,4 +30,8 @@ public class Project extends BaseTimeEntity {
     private String description;
 
     private ProjectStatus status;
+
+    public boolean isOngoing() {
+        return this.status == ProjectStatus.ONGOING;
+    }
 }
