@@ -1,15 +1,17 @@
-
 package com.yaho.seungminonsale.project.entity;
+
 
 import com.yaho.seungminonsale.common.BaseTimeEntity;
 import com.yaho.seungminonsale.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 @Table(name = "projects")
 public class Project extends BaseTimeEntity {
@@ -18,18 +20,14 @@ public class Project extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @Setter
     private String name;
 
-    @Setter
     private String description;
 
-    @Setter
-    @Enumerated(EnumType.STRING)
     private ProjectStatus status;
 }
