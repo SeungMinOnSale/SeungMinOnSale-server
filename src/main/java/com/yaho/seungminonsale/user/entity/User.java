@@ -29,8 +29,8 @@ public class User {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    @Column(nullable = false, length = 100)
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -43,9 +43,9 @@ public class User {
     private LocalDateTime createdAt;
 
     @Builder
-    private User(String email, String passwordHash, Role role) {
+    private User(String email, String password, Role role) {
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.role = role;
         this.active = true;
     }
