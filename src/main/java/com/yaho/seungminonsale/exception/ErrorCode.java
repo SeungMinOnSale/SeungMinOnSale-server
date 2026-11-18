@@ -18,7 +18,11 @@ public enum ErrorCode {
     APPLICATION_ALREADY_DECIDED(HttpStatus.CONFLICT, "이미 처리된 지원입니다."),
     RECRUITMENT_NOT_AVAILABLE(HttpStatus.CONFLICT, "모집이 마감되었거나 종료된 프로젝트입니다."),
     RECRUITMENT_CAPACITY_EXCEEDED(HttpStatus.CONFLICT, "모집 정원이 가득 찼습니다."),
-    ALREADY_TEAM_MEMBER(HttpStatus.CONFLICT, "이미 해당 프로젝트의 팀원입니다.");
+    ALREADY_TEAM_MEMBER(HttpStatus.CONFLICT, "이미 해당 프로젝트의 팀원입니다."),
+
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),
+    PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로젝트를 찾을 수 없습니다."),
+    MEMBERSHIP_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 프로젝트의 팀원 목록을 조회할 권한이 없습니다.");
 
     ErrorCode(HttpStatus status, String message) {
         this.message = message;
