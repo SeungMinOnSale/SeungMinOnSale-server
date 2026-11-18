@@ -1,15 +1,14 @@
 package com.yaho.seungminonsale.worker.service;
 
-import com.yaho.seungminonsale.worker.dto.WorkerResponse;
-import com.yaho.seungminonsale.worker.dto.WorkerUpdateRequest;
-
-import java.util.List;
+import com.yaho.seungminonsale.worker.dto.request.WorkerUpdateRequest;
+import com.yaho.seungminonsale.worker.dto.response.WorkerResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface WorkerService {
+    Page<WorkerResponse> findAll(String skills, Boolean available, Pageable pageable);
 
-    List<WorkerResponse> getWorkers();
+    WorkerResponse findById(Long id);
 
-    WorkerResponse getWorker(Long workerId);
-
-    WorkerResponse updateWorker(Long workerId, WorkerUpdateRequest request);
+    WorkerResponse update(Long id, WorkerUpdateRequest request);
 }

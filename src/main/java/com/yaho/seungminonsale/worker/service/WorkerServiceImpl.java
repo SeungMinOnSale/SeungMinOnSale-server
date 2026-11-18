@@ -1,51 +1,57 @@
 package com.yaho.seungminonsale.worker.service;
 
-import com.yaho.seungminonsale.worker.dto.WorkerResponse;
-import com.yaho.seungminonsale.worker.dto.WorkerUpdateRequest;
+import com.yaho.seungminonsale.exception.WorkerNotFoundException;
+import com.yaho.seungminonsale.worker.dto.request.WorkerUpdateRequest;
+import com.yaho.seungminonsale.worker.dto.response.WorkerResponse;
 import com.yaho.seungminonsale.worker.entity.Worker;
 import com.yaho.seungminonsale.worker.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class WorkerServiceImpl implements WorkerService {
 
     private final WorkerRepository workerRepository;
 
     @Override
-    public List<WorkerResponse> getWorkers() {
-        return workerRepository.findAll().stream()
-                .map(WorkerResponse::from)
-                .toList();
-    }
+    public Page<WorkerResponse> findAll(String skills, Boolean available, Pageable pageable) {
+        boolean hasSkills = skills != null && !skills.isBlank();
 
-    @Override
-    public WorkerResponse getWorker(Long workerId) {
-        return WorkerResponse.from(findWorker(workerId));
-    }
-
-    @Override
-    public WorkerResponse updateWorker(Long workerId, WorkerUpdateRequest request) {
-        if (isBlankValue(request.name()) || isBlankValue(request.phone())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이름과 연락처는 공백일 수 없습니다.");
+        Page<Worker> workers;
+        if (hasSkills && available != null) {
+            workers = workerRepository.findBySkillsContainingIgnoreCaseAndAvailable(skills, available, pageable);
+        } else if (hasSkills) {
+            workers = workerRepository.findBySkillsContainingIgnoreCase(skills, pageable);
+        } else if (available != null) {
+            workers = workerRepository.findByAvailable(available, pageable);
+        } else {
+            workers = workerRepository.findAll(pageable);
         }
-
-        Worker worker = findWorker(workerId);
-        worker.update(request.name(), request.phone(), request.skills(), request.available());
-        return WorkerResponse.from(workerRepository.save(worker));
+        return workers.map(WorkerResponse::from);
     }
 
-    private Worker findWorker(Long workerId) {
-        return workerRepository.findById(workerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "근로자를 찾을 수 없습니다."));
+    @Override
+    public WorkerResponse findById(Long id) {
+        return WorkerResponse.from(getWorker(id));
     }
 
-    private boolean isBlankValue(String value) {
-        return value != null && value.isBlank();
+    @Override
+    @Transactional
+    public WorkerResponse update(Long id, WorkerUpdateRequest request) {
+        Worker worker = getWorker(id);
+        worker.update(request.getName(), request.getPhone(), request.getSkills(), request.getAvailable());
+        // updatedAt은 flush 시점에 바뀌므로 응답 전에 flush
+        workerRepository.flush();
+        return WorkerResponse.from(worker);
+    }
+
+    private Worker getWorker(Long id) {
+        return workerRepository.findById(id)
+                .orElseThrow(WorkerNotFoundException::new);
     }
 }
