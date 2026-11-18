@@ -1,22 +1,21 @@
 package com.yaho.seungminonsale.user.controller;
 
-import com.yaho.seungminonsale.common.exception.BusinessException;
-import com.yaho.seungminonsale.common.exception.ErrorCode;
-import com.yaho.seungminonsale.user.dto.SignupRequest;
-import com.yaho.seungminonsale.user.dto.SignupResponse;
+import com.yaho.seungminonsale.exception.DuplicateEmailException;
+import com.yaho.seungminonsale.user.dto.request.SignupRequest;
+import com.yaho.seungminonsale.user.dto.response.SignupResponse;
 import com.yaho.seungminonsale.user.service.AuthService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -24,9 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AuthController.class)
 class AuthControllerTest {
 
-    private static final String SIGNUP_BODY = """
-            {"email":"student@test.com","password":"password123","name":"김학생","skills":"Java"}
-            """;
+    private static final String url = "/api/auth/signup";
 
     @Autowired
     private MockMvc mockMvc;
@@ -34,35 +31,68 @@ class AuthControllerTest {
     @MockitoBean
     private AuthService authService;
 
+    @Autowired
+    private JsonMapper jsonMapper;
+
     @Test
-    @DisplayName("회원가입에 성공하면 201과 회원 ID, 학생 프로필 ID를 반환한다")
-    void signupSuccess() throws Exception {
-        given(authService.signup(any(SignupRequest.class)))
-                .willReturn(new SignupResponse(1L, 1L, "student@test.com"));
+    @DisplayName("회원가입 성공 - 201 CREATED")
+    void signup_success() throws Exception {
+        // given
+        SignupRequest request = new SignupRequest("student@test.com", "password123", "김학생", null, "Java");
+        SignupResponse response = SignupResponse.builder()
+                .userId(1L)
+                .workerId(1L)
+                .email("student@test.com")
+                .build();
+        BDDMockito.given(authService.signup(BDDMockito.any(SignupRequest.class)))
+                .willReturn(response);
 
-        MvcResult result = mockMvc.perform(post("/api/auth/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(SIGNUP_BODY))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.userId").value(1))
-                .andExpect(jsonPath("$.data.workerId").value(1))
-                .andReturn();
+        // when
+        ResultActions result = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonMapper.writeValueAsString(request)));
 
-        assertThat(result.getResponse().getContentAsString()).contains("student@test.com");
+        // then
+        result.andExpect(status().isCreated())
+                .andExpect(jsonPath("$.userId").value(1))
+                .andExpect(jsonPath("$.workerId").value(1))
+                .andExpect(jsonPath("$.email").value("student@test.com"));
+        assertThat(result.andReturn().getResponse().getHeader("Location")).endsWith("/api/workers/1");
     }
 
     @Test
-    @DisplayName("이미 가입된 이메일로 회원가입하면 409와 오류 응답을 반환한다")
-    void signupDuplicateEmail() throws Exception {
-        given(authService.signup(any(SignupRequest.class)))
-                .willThrow(new BusinessException(ErrorCode.DUPLICATE_EMAIL));
+    @DisplayName("회원가입 실패(이름) - 400 BAD_REQUEST")
+    void signup_blankName() throws Exception {
+        // given
+        SignupRequest request = new SignupRequest("student@test.com", "password123", " ", null, null);
 
-        mockMvc.perform(post("/api/auth/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(SIGNUP_BODY))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.errorCode").value("DUPLICATE_EMAIL"));
+        // when
+        ResultActions result = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonMapper.writeValueAsString(request)));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.errors[0].field").value("name"))
+                .andExpect(jsonPath("$.errors[0].message").value("이름을 입력해주세요."));
+    }
+
+    @Test
+    @DisplayName("회원가입 실패(중복 이메일) - 409 CONFLICT")
+    void signup_duplicateEmail() throws Exception {
+        // given
+        SignupRequest request = new SignupRequest("student@test.com", "password123", "김학생", null, null);
+        BDDMockito.given(authService.signup(BDDMockito.any(SignupRequest.class)))
+                .willThrow(new DuplicateEmailException());
+
+        // when
+        ResultActions result = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonMapper.writeValueAsString(request)));
+
+        // then
+        result.andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("DUPLICATE_EMAIL"));
     }
 }
