@@ -1,7 +1,7 @@
 package com.yaho.seungminonsale.application.entity;
 
 import com.yaho.seungminonsale.common.BaseTimeEntity;
-import com.yaho.seungminonsale.recruitment.entity.RecruitmentPost;
+import com.yaho.seungminonsale.recruitmentPost.entity.RecruitmentPost;
 import com.yaho.seungminonsale.worker.entity.Worker;
 import jakarta.persistence.*;
 import lombok.Getter;

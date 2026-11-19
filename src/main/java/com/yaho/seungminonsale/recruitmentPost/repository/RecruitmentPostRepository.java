@@ -1,6 +1,6 @@
-package com.yaho.seungminonsale.recruitment.repository;
+package com.yaho.seungminonsale.recruitmentPost.repository;
 
-import com.yaho.seungminonsale.recruitment.entity.RecruitmentPost;
+import com.yaho.seungminonsale.recruitmentPost.entity.RecruitmentPost;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;

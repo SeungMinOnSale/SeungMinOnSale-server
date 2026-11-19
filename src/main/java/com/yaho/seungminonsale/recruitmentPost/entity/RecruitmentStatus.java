@@ -1,4 +1,4 @@
-package com.yaho.seungminonsale.recruitment.entity;
+package com.yaho.seungminonsale.recruitmentPost.entity;
 
 public enum RecruitmentStatus {
     OPEN,

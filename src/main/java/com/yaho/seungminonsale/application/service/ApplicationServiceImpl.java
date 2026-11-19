@@ -11,8 +11,8 @@ import com.yaho.seungminonsale.exception.NotProjectOwnerException;
 import com.yaho.seungminonsale.exception.RecruitmentCapacityExceededException;
 import com.yaho.seungminonsale.exception.RecruitmentNotAvailableException;
 import com.yaho.seungminonsale.project.entity.Project;
-import com.yaho.seungminonsale.recruitment.entity.RecruitmentPost;
-import com.yaho.seungminonsale.recruitment.repository.RecruitmentPostRepository;
+import com.yaho.seungminonsale.recruitmentPost.entity.RecruitmentPost;
+import com.yaho.seungminonsale.recruitmentPost.repository.RecruitmentPostRepository;
 import com.yaho.seungminonsale.teammembership.domain.entity.TeamMembership;
 import com.yaho.seungminonsale.application.dto.ApplicationDecisionRequest;
 import com.yaho.seungminonsale.teammembership.dto.TeamMembershipResponse;
@@ -20,8 +20,6 @@ import com.yaho.seungminonsale.teammembership.repository.TeamMembershipRepositor
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
