@@ -17,7 +17,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -116,5 +118,42 @@ class ProjectResultControllerTest {
         // then
         result.andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("PROJECT_RESULT_ALREADY_EXISTS"));
+    }
+
+    @Test
+    @DisplayName("프로젝트 결과 조회 성공 - 200")
+    void getProjectResults_success() throws Exception {
+        // given
+        ProjectResultResponse response = new ProjectResultResponse(
+                100L, 1L, "더미", "더미", "url", LocalDateTime.of(2026, 11, 19, 10, 0));
+        BDDMockito.given(projectResultService.getProjectResults(1L))
+                .willReturn(List.of(response));
+
+        // when
+        ResultActions result = mockMvc.perform(get(url)
+                .param("projectId", String.valueOf(1L)));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(100))
+                .andExpect(jsonPath("$[0].projectId").value(1))
+                .andExpect(jsonPath("$[0].summary").value("더미"))
+                .andExpect(jsonPath("$[0].repositoryUrl").value("url"));
+    }
+
+    @Test
+    @DisplayName("프로젝트 결과 조회 실패 - 400")
+    void getProjectResults_invalidProjectId() throws Exception {
+        // given
+
+        // when
+        ResultActions result = mockMvc.perform(get(url)
+                .param("projectId", "abc"));
+
+        // then
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.errors[0].field").value("projectId"));
     }
 }
