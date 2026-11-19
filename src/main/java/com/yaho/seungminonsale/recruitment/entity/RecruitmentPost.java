@@ -4,6 +4,7 @@ package com.yaho.seungminonsale.recruitment.entity;
 import com.yaho.seungminonsale.common.BaseTimeEntity;
 import com.yaho.seungminonsale.project.entity.Project;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "recruitment_posts")
+@Getter
 public class RecruitmentPost extends BaseTimeEntity {
 
     @Id
@@ -34,4 +36,8 @@ public class RecruitmentPost extends BaseTimeEntity {
 
     @Column(nullable = false)
     private RecruitmentStatus status;
+
+    public boolean isOpen() {
+        return this.status == RecruitmentStatus.OPEN;
+    }
 }
