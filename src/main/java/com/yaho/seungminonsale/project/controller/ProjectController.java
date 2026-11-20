@@ -3,7 +3,6 @@ package com.yaho.seungminonsale.project.controller;
 import com.yaho.seungminonsale.project.dto.ProjectCreateRequest;
 import com.yaho.seungminonsale.project.dto.ProjectResponse;
 import com.yaho.seungminonsale.project.service.ProjectService;
-import com.yaho.seungminonsale.user.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/projects")
 @AllArgsConstructor
+
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -19,10 +19,10 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<ProjectResponse> createProject(
             @RequestBody ProjectCreateRequest request,
-            @RequestAttribute("currentUser") User owner
+            @RequestParam("userId") Long userId
     ) {
         ProjectResponse response =
-                projectService.createProject(request, owner);
+                projectService.createProject(request, userId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

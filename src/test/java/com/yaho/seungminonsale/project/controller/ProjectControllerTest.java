@@ -4,7 +4,6 @@ import com.yaho.seungminonsale.project.dto.ProjectCreateRequest;
 import com.yaho.seungminonsale.project.dto.ProjectResponse;
 import com.yaho.seungminonsale.project.entity.ProjectStatus;
 import com.yaho.seungminonsale.project.service.ProjectService;
-import com.yaho.seungminonsale.user.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -29,9 +28,6 @@ class ProjectControllerTest {
 
     @Mock
     private ProjectService projectService;
-
-    @Mock
-    private User owner;
 
     @InjectMocks
     private ProjectController projectController;
@@ -58,11 +54,11 @@ class ProjectControllerTest {
 
         given(projectService.createProject(
                 any(ProjectCreateRequest.class),
-                same(owner)
+                eq(1L)
         )).willReturn(response);
 
         mockMvc.perform(post("/api/projects")
-                        .requestAttr("currentUser", owner)
+                        .param("userId", "1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -80,12 +76,12 @@ class ProjectControllerTest {
 
         verify(projectService).createProject(
                 any(ProjectCreateRequest.class),
-                same(owner)
+                eq(1L)
         );
     }
 
     @Test
-    @DisplayName("필수 사용자 속성이 없으면 HTTP 400을 반환한다")
+    @DisplayName("userId가 없으면 HTTP 400을 반환한다")
     void createProjectWithoutCurrentUserReturns400() throws Exception {
         mockMvc.perform(post("/api/projects")
                         .contentType(MediaType.APPLICATION_JSON)

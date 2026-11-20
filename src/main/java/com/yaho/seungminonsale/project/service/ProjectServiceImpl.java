@@ -1,11 +1,13 @@
 package com.yaho.seungminonsale.project.service;
 
+import com.yaho.seungminonsale.exception.UserNotFoundException;
 import com.yaho.seungminonsale.project.dto.ProjectCreateRequest;
 import com.yaho.seungminonsale.project.dto.ProjectResponse;
 import com.yaho.seungminonsale.project.entity.Project;
 import com.yaho.seungminonsale.project.entity.ProjectStatus;
 import com.yaho.seungminonsale.project.repository.ProjectRepository;
 import com.yaho.seungminonsale.user.entity.User;
+import com.yaho.seungminonsale.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public ProjectResponse createProject(
             ProjectCreateRequest request,
-            User owner
+            Long userId
     ) {
         if (request == null ||
                 request.name() == null ||
@@ -32,11 +35,14 @@ public class ProjectServiceImpl implements ProjectService {
             );
         }
 
-        if (owner == null || owner.getId() == null) {
+        if (userId == null) {
             throw new IllegalArgumentException(
                     "프로젝트 개설자 정보가 없습니다."
             );
         }
+
+        User owner = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
 
         Project project = new Project(
                 null,
