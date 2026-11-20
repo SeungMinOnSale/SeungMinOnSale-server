@@ -8,6 +8,6 @@ public interface ProjectService {
 
     ProjectResponse createProject(
             ProjectCreateRequest request,
-            User owner
+            Long userId
     );
 }

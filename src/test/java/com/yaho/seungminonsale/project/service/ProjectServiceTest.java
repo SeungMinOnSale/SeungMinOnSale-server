@@ -6,6 +6,8 @@ import com.yaho.seungminonsale.project.entity.Project;
 import com.yaho.seungminonsale.project.entity.ProjectStatus;
 import com.yaho.seungminonsale.project.repository.ProjectRepository;
 import com.yaho.seungminonsale.user.entity.User;
+import com.yaho.seungminonsale.user.repository.UserRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +33,9 @@ class ProjectServiceTest {
     private ProjectRepository projectRepository;
 
     @Mock
+    private UserRepository userRepository;
+
+    @Mock
     private User owner;
 
     @Test
@@ -42,6 +47,8 @@ class ProjectServiceTest {
         );
 
         given(owner.getId()).willReturn(1L);
+        given(userRepository.findById(1L))
+                .willReturn(Optional.of(owner));
 
         Project savedProject = new Project(
                 10L,
@@ -55,7 +62,7 @@ class ProjectServiceTest {
                 .willReturn(savedProject);
 
         ProjectResponse response =
-                projectService.createProject(request, owner);
+                projectService.createProject(request, 1L);
 
         assertThat(response.id()).isEqualTo(10L);
         assertThat(response.ownerId()).isEqualTo(1L);
@@ -80,10 +87,10 @@ class ProjectServiceTest {
     @Test
     @DisplayName("프로젝트 생성 요청이 없으면 예외가 발생한다")
     void createProjectWhenRequestIsNullThrowsException() {
-        assertThatThrownBy(() -> projectService.createProject(null, owner))
+        assertThatThrownBy(() -> projectService.createProject(null, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("프로젝트 이름과 설명은 필수입니다.");
 
-        verifyNoInteractions(projectRepository);
+        verifyNoInteractions(projectRepository, userRepository);
     }
 }
