@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "recruitment_posts")
 @Getter
+@AllArgsConstructor
 public class RecruitmentPost extends BaseTimeEntity {
 
     @Id
